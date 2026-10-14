@@ -1,0 +1,34 @@
+import fs from 'fs'; import { P3 } from '/home/gautier/SynologyDrive/code/current/demos/saint/site/js/parts/p3.js';
+const A='/home/gautier/SynologyDrive/code/current/demos/saint/site/assets/p3/', T='/tmp/p3test/';
+const b=n=>new Uint8Array(fs.readFileSync(A+n)), f=n=>new Float32Array(b(n).slice().buffer), i=n=>new Int32Array(b(n).slice().buffer), j=n=>JSON.parse(fs.readFileSync(A+n));
+const a={grid:f('grid.f32'),keysA:f('keysA.f32'),keysB:f('keysB.f32'),keysF:f('keysF.f32'),tex:b('tex.bin'),shade:b('shade.bin'),ease:i('ease.i32'),palA:b('palA.bin'),palB:b('palB.bin'),overlay:b('overlay.bin'),filter:b('filter.bin'),sprites:b('sprites.bin'),sprTbl:b('sprite_tbl.bin'),meta:j('objects.json'),consts:j('consts.json')};
+a.m0v=f('obj0_v.f32');a.m0fi=i('obj0_fi.i32');a.m0fn=f('obj0_fn.f32');a.lines=[1,2,3].map(k=>({v:f(`obj${k}_v.f32`),l:i(`obj${k}_l.i32`)}));
+const s=JSON.parse(fs.readFileSync(T+'state.json'));
+const p=new P3(a); const S=p.S; S.sel=s.sel; S.A.t=s.A.t;S.A.idx=s.A.i;S.B.t=s.B.t;S.B.idx=s.B.i; S.ptr=s.ptr/12; S.blendOn=s.blendOn; S.blend=s.blend;
+p.flp.forEach((fp,k)=>{fp.t=s.flpath[k][0];fp.idx=s.flpath[k][1];});
+const out=new Uint8Array(64000),pal=new Uint8Array(768);
+p.render(out,pal,s.order,0);
+const ref=fs.readFileSync(T+'stage_all.bin'); let d=0; const mask=new Uint8Array(64000); for(let q=0;q<64000;q++) if(out[q]!==ref[q]){d++;mask[q]=1;}
+console.log('stage_all diff',d,'/64000  order',s.order,'sel',s.sel,'ptr',s.ptr);
+fs.writeFileSync('/tmp/p3_js.raw',out); fs.writeFileSync('/tmp/p3_mask.raw',mask);
+import { spline, lookAt } from '/home/gautier/SynologyDrive/code/current/demos/saint/site/js/engine/camera.js';
+import { renderTunnel } from '/home/gautier/SynologyDrive/code/current/demos/saint/site/js/engine/tunnel.js';
+const keys=S.sel?a.keysB:a.keysA, sp=S.sel?S.B:S.A; const ch=spline(keys,{...sp}), L=lookAt(ch);
+console.log('M err',Math.max(...L.M.map((v,q)=>Math.abs(v-s.M[q]))),'eye err',Math.max(...L.eye.map((v,q)=>Math.abs(v-s.pos[q]))), 'zoom',ch[9],s.zoom);
+const o2=new Uint8Array(64000); renderTunnel(o2,a.grid,a.tex,a.shade,{pos:L.eye.map(Math.fround),M:L.M,warp:'sphere',warp2:null,blend:0,k:{flagA:0}});
+const r0=fs.readFileSync(T+'stage_tunnel.bin'); let d0=0; for(let q=0;q<64000;q++) if(o2[q]!==r0[q]) d0++; console.log('tunnel diff',d0,'state warp',s.warp,s.blendOn,s.blend);
+import { cullObjects, processObject } from '/home/gautier/SynologyDrive/code/current/demos/saint/site/js/engine/mesh.js';
+const F=JSON.parse(fs.readFileSync(T+'faces.json'));
+const cam=[L.M[0],L.M[1],L.M[2],0,L.M[3],L.M[4],L.M[5],0,L.M[6],L.M[7],L.M[8],0,L.trans[0],L.trans[1],L.trans[2],1];
+const K={near:-0.1,far:-4000,w:320,h:200,zoom:320,zoomY:320*0.8333333333299999,k150c4:21000,k150c8:1e6,nearClip:true,faceLevel:i=>((i>>1)&1)?24:16};
+const all=[p.mesh,...p.wires]; cullObjects(all,cam,K); const list=[]; processObject(p.mesh,cam,L.eye,K,list);
+let bad=0,n=0,ex=[]; for(const it of list){ const fi=p.mesh.faces.indexOf(it.f); n++; if(it.f.lvl!==F.lvl[fi]){bad++; if(ex.length<5) ex.push([fi,it.f.lvl,F.lvl[fi]]);} }
+console.log('tri items',list.length,'lvl mismatches',bad,JSON.stringify(ex),'M err',Math.max(...F.M.map((v,q)=>Math.abs(v-0)).slice(0,0)));
+const fb=F.fb; const orc=F.list.filter(([k,ptr])=>ptr>=fb&&ptr<fb+0x30*p.mesh.faces.length); console.log('oracle tri items',orc.length,'of list',F.list.length);
+const oi=new Map(orc.map(([k,ptr])=>[(ptr-fb)/0x30,k])); const ji=new Map(list.map(it=>[p.mesh.faces.indexOf(it.f),it.key]));
+let only_j=0,only_o=0,both=0,keydiff=0; for(const [i,k] of ji){ if(oi.has(i)){both++; if(oi.get(i)!==k) keydiff++;} else only_j++; } for(const i of oi.keys()) if(!ji.has(i)) only_o++;
+console.log('both',both,'only js',only_j,'only oracle',only_o,'key diffs',keydiff);
+let ld=0; for(const [i] of oi){ if(ji.has(i)){ const f=p.mesh.faces[i]; if(f.lvl!==F.lvl[i]) ld++; } } console.log('lvl diffs among common',ld);
+const vj=p.mesh.faces.filter(f=>f.vis===0).length, vo=F.vis.filter(v=>v===0).length; console.log('vis front faces js',vj,'oracle',vo);
+let vm=0; p.mesh.faces.forEach((f,i)=>{ if((f.vis===1?1:0)!==(F.vis[i]===1?1:0)) vm++; }); console.log('vis mismatches',vm);
+const dist={}; for(const [i] of oi){ const k=F.lvl[i]+'/'+p.mesh.faces[i].lvl; dist[k]=(dist[k]||0)+1; } console.log(JSON.stringify(dist).slice(0,300));

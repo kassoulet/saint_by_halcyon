@@ -1,0 +1,97 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAINT — write-up</title><link rel="stylesheet" href="css/style.css"></head><body>
+<header><nav><a href="index.html">home</a><a href="demo.html">run the demo</a><a href="writeup.html">write-up</a></nav></header>
+<main>
+<h1 style="letter-spacing:.1em">Write-up</h1>
+<h2>1. The scene in 1997</h2>
+<p><i>SAINT</i> was released at <b>Assembly 1997</b> (Helsinki) by <b>halcyon</b> and the tracker group <b>da jormas</b>. Code by blitz, graphics by shrine, placidity and croaker, meshes by ren, music by naks, pam and vesuri (“3 tunes mixed to 1”). In 1997 a PC demo meant: MS-DOS, a 386/Pentium, VGA mode 13h (320×200, 256 colours from an 18-bit palette), a Sound Blaster, and a 32-bit <i>DOS extender</i> (here PMODE) to escape the 640 KB real-mode limit. No GPU: every pixel is written by the CPU, so effects are built from <b>lookup tables and tricks</b> — precomputed maps, palette games and bilinear interpolation — rather than brute force.</p>
+<h2>2. How the EXE is built</h2>
+<p>The 2.5 MB file starts with a tiny real-mode <b>Blinker-style stub</b> that re-opens the EXE, loads a PMODE protected-mode program and its data (almost uncompressed), then switches to 32-bit mode. The program contains three main loops — one per “part” — plus the intro and a software mixer-driven S3M player (by asmu). Images are ColoRIX <code>RIX3</code> files (raw 6-bit VGA palette + pixels); the soundtrack is a plain Scream&nbsp;Tracker&nbsp;3 module.</p>
+<h2>3. The engine: “halcyon super kolmedee enkine”</h2>
+<p>Every frame of a part does the same thing:</p>
+<ol>
+<li><b>Camera.</b> A cubic (Catmull-Rom/Hermite) spline is evaluated through a table of keyframes (10 floats each: position, angles…), advanced a little every timer tick.</li>
+<li><b>Tunnel grid.</b> 41×26 grid vertices (one per 8×8 screen block) are rotated by the camera matrix and passed to a <i>warp function</i>. The warp casts the ray camera→vertex against an analytic surface (a cylinder, solved as a quadratic: <code>t = −(b+√(b²−4ac))/2a</code>) and returns three numbers: texture <b>u</b> (angle, via <code>atan2</code>), texture <b>v</b> (position along the tube) and a <b>depth shade</b>. Several variants exist (with/without a sinusoidal wobble); a hidden key toggles them.</li>
+<li><b>Interpolated raster.</b> Instead of ray-casting 64 000 pixels, the (u,v,shade) triples are bilinearly interpolated across each 8×8 block in fixed point. Each pixel then costs two table lookups: <code>t = texture[v][u]</code> and <code>colour = shade_table[shade][t]</code> — the second table is the “quantized shading tables” built during the loading screen, so the palette gets darker/foggier with depth without any per-pixel arithmetic.</li>
+<li><b>Objects.</b> A depth-sorted list (key = z) of sprites, billboards, flares and clipped flat/textured triangles is drawn over the tunnel.</li>
+<li><b>Palette.</b> The timer ISR cross-fades between three stored palettes through the DAC (<code>out 3C8h/3C9h</code>), which gives the white flashes and fades between scenes without touching the pixels.</li>
+</ol>
+<h2>4. Timeline</h2>
+<p>The demo's clock is the music: the player writes the current S3M order into a variable that every part tests (<code>cmp word [12BFh], n</code>). Intro = orders 0–2, part 1 = 3–5, part 2 = 6–11, part 3 = 12–21, D = 22–23, A = 24–25, B = 26–27, E = 28–34, F = 35–38, C = 39–44 (the whole module, ≈ 4 min 22), followed by a full-screen picture shown for 700 ticks in silence. Rows matter too: parts fade or switch on <code>(order,row)</code> thresholds, and the module changes speed between sections (orders 12–27 are 64 rows of 55 ms, the others about 110 ms), so the runner uses the real start time of every row (<code>tools/s3m_timeline.py</code> → <code>row_times.json</code>). The browser runner uses libopenmpt for the same module and maps music time to these scenes.</p>
+<h2>4b. Two things that make the crystals special</h2>
+<p>The glassy crystals of part 1 are not lit polygons. Each triangle is rasterised by <code>0x1FC7B</code>, which does not write colours at all: every pixel it covers is replaced by <code>table[level][pixel]</code>, a 64×256 table that brightens and tints the existing colour. The “level” is how squarely the face looks at the camera, reduced with distance. The glows around them are 256-pixel-wide sprites selected by distance (a small mip chain) and blitted through the same table, so light adds up without any real alpha blending.</p>
+<p>And the world is <b>tick-driven</b>: the 70 Hz retrace interrupt advances every animation variable (camera spline parameter, wobble phases, crystal spins, palette fades); the main loop only draws whatever the state is. That is why the demo runs the same at any frame rate — and why the port can seek by replaying ticks.</p>
+<h2>4c. The 3D scenes: vertices and triangles</h2>
+<p>Part 1 contains <b>33 crystals</b>. Each is a small mesh of <b>20 vertices and 36 triangles</b> generated at load time (that is the “loading and preparing scene…” step), so 660 vertices and 1 188 triangles in total. Part 2's morphing star is one object of <b>105 vertices and 206 triangles</b> whose vertices are interpolated between two stored shapes every frame. Records are plain arrays:</p>
+<pre>vertex (0x40 bytes)  +04 flag (1 = not needed)   +08 x,y,z model space (float32)
+                     +14 sx  +18 sy  +1C z_view  +20 1/z   (after transform/projection)
+                     +00 outcode (y&lt;0, y&gt;200, x&lt;0, x&gt;320)   +30.. u,v,intensity (textured meshes)
+face   (0x30 bytes)  +00 draw handler  +04 raster routine  +08 culled flag
+                     +0C,+10,+14 pointers to the 3 vertices
+                     +18..+24 plane equation  n·p + d   +2C level / shade</pre>
+<p>Per frame and per object the engine runs a fixed pipeline: <b>(1)</b> frustum-cull the object's bounding sphere; <b>(2)</b> put the eye in object space and test every face's plane equation (back-face culling — about 1 000 of the 1 188 triangles die here; 195 are drawn in the checked frame); <b>(3)</b> transform only the vertices of surviving faces with one 4×4 matrix (object·camera, row-vector convention); <b>(4)</b> perspective-project (<code>sx = x·f/z+160</code>, <code>sy = y·0.83f/z+100</code>, keep <code>1/z</code>) and compute a 4-bit outcode per vertex; <b>(5)</b> push <code>(65535 − depth key, face)</code> on a list; <b>(6)</b> a two-pass <b>radix sort</b> (low byte, then high byte of the 16-bit key) orders the list back to front (no z-buffer); <b>(7)</b> each face goes to its handler, which clips against the screen with four Sutherland–Hodgman passes only if an outcode is non-zero, fans the polygon into triangles and calls the raster routine.</p>
+<h2>4d. Inner loops</h2>
+<p>All the speed is in a handful of loops. Everything is integer or table based; there is no division and no multiplication per pixel.</p>
+<p><b>Tunnel, one pixel</b> (8 of these are unrolled per block row, two pixels packed into one 16-bit store). <code>si</code>/<code>ch</code>/<code>dh</code> hold the interpolated v/u/shade in 16.8 fixed point; the texture is 256×256 so the “address calculation” is just placing bytes into <code>ax</code>:</p>
+<pre>mov  ax, si              ; ah = v           (al is overwritten next)
+mov  al, ch              ; al = u           -> eax = base | v&lt;&lt;8 | u
+add  ecx, [dU]           ; step u
+add  esi, [dV]           ; step v
+mov  al, [eax]           ; texel (a quantised colour id)
+mov  ah, dh              ; ah = depth shade -> eax = shade&lt;&lt;8 | texel
+add  edx, [dZ]           ; step shade
+mov  bl, [eax+10000h]    ; final palette index: 64 KB shading table</pre>
+<p><b>Filter triangle span</b> (crystals; the whole “translucency” is a table lookup per covered pixel; <code>ah</code> holds the face level, set once per triangle):</p>
+<pre>L: mov  al, [edi]        ; pixel already on screen
+   inc  edi
+   dec  ecx
+   mov  al, [eax]        ; table[level][pixel]
+   mov  [edi-1], al
+   jne  L</pre>
+<p><b>Glow sprite</b> (flares; the sprite's own value picks the table row, the pixel underneath picks the column, so the glow adds light):</p>
+<pre>L: mov  al, bh           ; u (integer part of the 16.8 coordinate)
+   inc  edi
+   add  ebx, [step]
+   mov  dl, [edi]        ; destination pixel   -> edx = table | row | pixel
+   mov  dh, [eax+sprite] ; sprite intensity    -> picks the table row
+   dec  esi
+   mov  al, [edx]        ; remapped colour
+   mov  [edi], al
+   jne  L</pre>
+<p><b>Palette cross-fade</b> (runs in the retrace interrupt over all 768 DAC values: two linear interpolations between three palettes, which is how the whole screen pulses and flashes to white without touching a pixel):</p>
+<pre>L: mov  al, [esi+palA]  ; xor/mov bl,[palB] / mov cl,[palC] omitted
+   sub  eax, ebx
+   imul eax, edi         ; edi = A/B mix 0..1023
+   sar  eax, 10
+   add  eax, ebx
+   sub  eax, ecx
+   imul eax, ebp         ; ebp = fade to C (white) 0..1023
+   sar  eax, 10
+   add  eax, ecx
+   out  dx, al           ; DAC data port 3C9h
+   inc  esi
+   jne  L</pre>
+<p>Cost check for the tunnel: a 320×200 frame is 1 040 grid vertices through a ray cast (floating point, the only expensive part), then 64 000 pixels × 8 simple instructions ≈ 0.5 M integer instructions — fine for a Pentium at 20+ fps in 1997.</p>
+<h2>4e. The last scenes</h2>
+<p><b>Intro (orders 0–2).</b> A 160×100, 4-bit footage of 142 frames at 10 fps. Each frame is a run-length stream of nibbles (<code>F0 cn</code> = run of <i>n</i> pixels of colour <i>c</i>) that is written in <b>4×4 tiles</b> (a cache-friendly layout), doubled to 320×200 with linear interpolation, then smeared: two recursive passes, one forward one backward, blend every pixel with its up-right (resp. down-left) neighbour using a radial 8-bit <i>alpha mask</i>, via two multiplication tables (<code>h·l</code> and <code>(255−h)·l</code>). The result is a soft vignette: sharp in the middle, streaky at the edges. The “da HALCYON / da JORMAS” logos are copied over it (top half from order 1 row 60, all of it in order 2), and the last rows flash to white.</p>
+<p><b>D (orders 22–23).</b> No 3D at all: a 41×26 grid of (u,v,shade) is computed every frame from two orbiting “centres”: the distance to both is summed, turned into an angle and a zoom, and rotates/scales the (x,y) coordinates; the grid then goes through the same 8×8 interpolation as the tunnels. Text sprites follow a table of (order,row) triggers. The picture shown at frame <i>n</i> uses the grid computed at frame <i>n−1</i>.</p>
+<p><b>E (orders 28–34).</b> A textured sphere whose vertices are <i>rotated in place every frame and clamped into a 200-unit box</i>: as the sphere's position wanders on a Lissajous curve it is flattened against the walls of an invisible cube, and the damage is cumulative. A 168-line grid cage shows the box. The bull is a 118×200 sprite stamped in a corner (two poses alternating every 4 rows); the palette flashes with a sine-driven blend.</p>
+<p><b>F (orders 35–38).</b> A cave (193 vertices) lit by a single point light at the origin — the glowing 79-vertex star that rotates there — with the camera flying along a spline; the vertical field of view pulses. A faces whose three vertices receive no light are filled with colour 0. At the end a 1-bit, 216×158 animation (22 frames) of a silhouette is stamped on top.</p>
+<p><b>C (orders 39–44).</b> A plane tunnel (z = −300) that melts into a sphere after about 15 s, a big textured gem (310 vertices) with five pentagonal stars, 36 spinning shards (6 vertices each, rotating at slightly different speeds), a billboard figure whose sprite is selected from a 40-view sheet by the viewing angle, and the “dancer” strip on the right. When the module ends the program copies a 320×200 picture to the screen and waits 700 ticks.</p>
+<h2>5. Method</h2>
+<p>Static analysis alone is slow, so the reverse used <b>emulation as an oracle</b>: DOSBox-X to run the demo and dump RAM, then a Unicorn-based harness (<code>tools/oracle.py</code>) that runs the demo's <i>own</i> frame loop from any snapshot, giving bit-exact reference frames to diff the JavaScript port against. The full log is in <code>docs/PROCESS.md</code>.</p>
+<h2>6. Port status</h2>
+<table><tr><th>Part</th><th>Effect</th><th>Status</th></tr>
+<tr><td>assets</td><td>17 RIX images, S3M, order timeline</td><td>done</td></tr>
+<tr><td>runner</td><td>audio clock, pause (Space/P), seek ±5 s (←/→)</td><td>done</td></tr>
+<tr><td>part 1</td><td>“saint” tunnel: warp tunnel, crystals (filter triangles), flares, palette fades</td><td>done — frame identical to the original code run under emulation</td></tr>
+<tr><td>part 2</td><td>orange black hole: cylinder→sphere warp morph, 105-vertex morphing star (perspective-correct textured/Gouraud triangles), 50 dust glows, vending-machine sprite</td><td>done — frame identical to the original; star triangles rasterised by a bit-exact port of the original perspective-correct mapper (identical pixels)</td></tr>
+<tr><td>part 3</td><td>space: 2 464-triangle flat-shaded mesh, anti-aliased wire tubes, 50 glows on splines, script-driven camera cuts and overlay sprites</td><td>done — frame identical to the original code run under emulation</td></tr>
+<tr><td>part D</td><td>orders 22–23: two-centre distortion of a texture on the tunnel grid, scripted text sprites</td><td>done — pixel-identical to the original over the whole part</td></tr>
+<tr><td>part A</td><td>orders 24–25: textured Gouraud landscape mesh (203 vertices / 353 triangles) flown over by a spline camera, fade in/out</td><td>done — all 187 draw calls identical, ~700 px (1 %) differ from the original</td></tr>
+<tr><td>part B</td><td>orders 26–27: cylinder tunnel, wire-frame cone (804 AA lines), 270-triangle filter mesh</td><td>done — 2 px differ</td></tr>
+<tr><td>part E</td><td>orders 28–34: bull sprite, sphere squashed by a clamped box, wire-frame grid cage (stateful mesh)</td><td>done — palette exact; 40–80 px (0.1 %) differ, all on near-plane-clipped cage lines</td></tr>
+<tr><td>part F</td><td>orders 35–38: lit cave, rotating star, silhouette animation</td><td>done — palette exact; 0.4–2 % of pixels differ (texture-mapper rounding)</td></tr>
+<tr><td>part C</td><td>orders 39–44: melting tunnel, gem, shards, angle-selected sprite, dancer strip, final picture</td><td>done — palette exact; 3–344 px (≤ 0.5 %) differ at nine sampled frames across the whole part, including the tunnel→sphere melt</td></tr>
+<tr><td>intro</td><td>orders 0–2: tiled 4-bit footage, alpha-mask smear, logos</td><td>done — pixel- and palette-identical</td></tr></table>
+</main></body></html>
