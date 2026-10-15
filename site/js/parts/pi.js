@@ -9,11 +9,12 @@ export async function loadI(base = 'assets/pi/') {
   a.ptrs = new Uint32Array((await bin('ptrs')).buffer); a.ease1 = new Int32Array((await bin('ease1')).buffer); a.ease2 = new Int32Array((await bin('ease2')).buffer); return a;
 }
 export class PI {
-  constructor(a) {
-    this.a = a; this.tile = new Uint8Array(16000 + 4096); this.buf = new Uint8Array(OFF + 64000 + 2048); this.cachedStage = -1; this.reset();
+  constructor(a, init = {}) {
+    this.a = a; this.init = init; this.tile = new Uint8Array(16000 + 4096); this.buf = new Uint8Array(OFF + 64000 + 2048); this.cachedStage = -1; this.reset();
   }
   reset() {
-    this.S = { frozen: null, stage: 0, cnt: 0, ba8: 0, bac: 0x7f, b8c: 0, b90: 0, last: -1, C: Uint8Array.from(this.a.palC), dacEdi: 0, dacEbp: 0 };
+    const i = this.init;   // second run (orders 28-29) starts from the state the first one and part B left: see scenes/partI2.js
+    this.S = { frozen: null, stage: i.stage ?? 0, cnt: 0, ba8: i.ba8 ?? 0, bac: 0x7f, b8c: i.b8c ?? 0, b90: i.b90 ?? 0, last: -1, C: i.white ? new Uint8Array(768).fill(0x3f) : Uint8Array.from(this.a.palC), dacEdi: 0, dacEbp: 0 };
     this.tile.fill(0); this.tile.set(this.a.tail, 16000); this.ticks = 0;
   }
   step(order, row) {                                                        // ISR 0x4bd70

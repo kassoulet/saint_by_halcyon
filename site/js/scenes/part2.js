@@ -1,6 +1,6 @@
 import { loadP2, P2, TICK } from '../parts/p2.js';
 import { orderRow, ready } from '../musicpos.js';
-const START = 42.667;
+const START = 42.222;
 let p2 = null, loading = null;
 export const part2 = { name: 'part 2 — black hole & star', start: START, end: 81.778,
   render(scr, lt, t) {

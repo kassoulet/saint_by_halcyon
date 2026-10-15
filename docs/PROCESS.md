@@ -104,3 +104,10 @@ Per-part porting recipe (as for parts 1-3): export assets + a mid-frame test vec
 **Results** (pixels differing from the original over a 64 000-pixel frame; palettes always equal): intro 0, D 0, E 40–80, F 270–1500 (texture mapper rounding, see §10), B 2, A ≈ 700. C 3–344 (nine frames from tick 0 to 3500, checked with the earlier constant-row feed; frames 0–900 also re-checked with the real row clock).
 
 **What is not reproduced**: sub-tick effects of the real machine (the original loop's frame rate), and the ~0.4 s of silent loading between the intro and part 1.
+
+## 12. Scene boundaries measured on the original
+`tools/poll_ram.py SECONDS` runs SAINT.EXE in DOSBox-X and logs order `[12bf]`, row `[12ca]` and the sequencer's part index `[4af10]` (it increments when a part returns) every 10 ms; (order,row) → music time through `row_times.json`. Findings:
+* **P1 ends at order 5 row 60** (42.222 s; its loop tests `row >= 0x3c`), not at order 6: P2 therefore starts at 42.222 s. All other parts return exactly on an order start.
+* **The intro routine (`0x4ba97`) is called a second time between B and E** (`[4aea4]=0x1e` → it runs until order 30): the footage plays again during orders 28-29 (138.69-153.236 s) from frame 100, without logos, starting from `ba8=16, b8c=120240, b90=160320`, palette C all 0x3f (`scenes/partI2.js`). **E starts at order 30 (153.236 s)**, not 28; the earlier map was built from snapshots labelled by time and mislabelled E.
+* Timeline now: intro 0-21.333, P1 -42.222, P2 -81.778, P3 -117.333, D -124.444, A -131.556, B -138.69, intro again -153.236, E -189.599, F -218.69, C -262.3, final picture.
+* DOSBox-X at 40000 cycles/ms runs the frame loops slower than the target machine, so animation *rates* measured this way are not comparable with the port's 70.086 Hz tick; only the structure (exit tests, order/row of transitions, initial state) is.

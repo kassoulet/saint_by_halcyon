@@ -2,7 +2,7 @@ import { loadP1, P1, TICK } from '../parts/p1.js';
 import { orderRow, ready } from '../musicpos.js';
 const START = 21.333;
 let p1 = null, loading = null;
-export const part1 = { name: 'part 1 — "saint" tunnel', start: START, end: 42.667,
+export const part1 = { name: 'part 1 — "saint" tunnel', start: START, end: 42.222,
   render(scr, lt, t) {
     if (!p1) { loading ??= Promise.all([loadP1(), ready]).then(([a]) => { p1 = new P1(a); }); return; }
     const n = Math.floor(lt * TICK);

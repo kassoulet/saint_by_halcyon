@@ -1,6 +1,6 @@
 import { loadE, PE, TICK } from '../parts/pe.js';
 import { orderRow, ready } from '../musicpos.js';
-const START = 138.69;
+const START = 153.236;
 let pe = null, loading = null;
 export const partE = { name: 'part 7 — bull & squashed sphere', start: START, end: 189.599,
   render(scr, lt, t) {
