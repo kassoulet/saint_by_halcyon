@@ -1,6 +1,6 @@
 import { loadC, PC, TICK } from '../parts/pc.js';
 import { orderRow, ready } from '../musicpos.js';
-const START = 218.69, END = 262.3;
+const START = 211.417, END = 262.3;
 let pc = null, loading = null;
 const get = () => { if (!pc) loading ??= Promise.all([loadC(), ready]).then(([a]) => { pc = new PC(a); }); return pc; };
 export const partC = { name: 'part 9 — gem, shards & dancer', start: START, end: END,

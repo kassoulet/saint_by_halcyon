@@ -1,5 +1,5 @@
-// Scene timeline in music time (s), from the demo's own order counter [0x12bf] (S3M order starts, see tools/s3m_timeline.py):
-// intro = orders 0-2, P1 = 3-5 (ends at order 5 row 60), P2 = 6-11, P3 = 12-21, D 22-23, A 24-25, B 26-27, intro again 28-29, E 30-34, F 35-38, C 39-44, then the final picture.
+// Scene timeline in music time (s). The demo's order counter [12bf] = S3M order + 1 (measured with tools/poll_ram.py); parts return on these boundaries:
+// intro ends at S3M order 1 row 60 (footage 0-141), P1 from order 2 (after ~0.4 s of loading) to order 4 row 60, P2 -order 11, P3 -21, D -23, A -25, B -27, intro again 27-29, E 29-34, F 34-38, C 38-end, then the final picture.
 import { partI } from './partI.js';
 import { part1 } from './part1.js';
 import { part2 } from './part2.js';

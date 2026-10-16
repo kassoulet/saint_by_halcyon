@@ -1,8 +1,8 @@
 import { loadA, PA, TICK } from '../parts/pa.js';
 import { orderRow, ready } from '../musicpos.js';
-const START = 124.444;
+const START = 120.889;
 let pa = null, loading = null;
-export const partA = { name: 'part 5 — landscape', start: START, end: 131.556,
+export const partA = { name: 'part 5 — landscape', start: START, end: 128,
   render(scr, lt, t) {
     if (!pa) { loading ??= Promise.all([loadA(), ready]).then(([a]) => { pa = new PA(a); }); return; }
     const n = Math.floor(lt * TICK);

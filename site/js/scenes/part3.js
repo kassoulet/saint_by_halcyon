@@ -1,8 +1,8 @@
 import { loadP3, P3, TICK } from '../parts/p3.js';
 import { orderRow, ready } from '../musicpos.js';
-const START = 81.778;
+const START = 78.222;
 let p3 = null, loading = null;
-export const part3 = { name: 'part 3 — space', start: START, end: 117.34,
+export const part3 = { name: 'part 3 — space', start: START, end: 113.778,
   render(scr, lt, t) {
     if (!p3) { loading ??= Promise.all([loadP3(), ready]).then(([a]) => { p3 = new P3(a); }); return; }
     const n = Math.floor(lt * TICK);

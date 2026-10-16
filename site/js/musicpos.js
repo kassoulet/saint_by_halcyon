@@ -5,7 +5,7 @@ export const makeOrderRow = (orderTimes, rowTimes) => {
   return t => {
     let o = 0; for (const [oo, tt] of st) { if (tt <= t) o = oo; else break; }
     const R = rowTimes[o]; let r = 0; while (r < 63 && R[r + 1] <= t + 1e-9) r++;
-    return [o, r];
+    return [o + 1, r];   // the demo's order counter [12bf] is the S3M order + 1
   };
 };
 let fn = null;
