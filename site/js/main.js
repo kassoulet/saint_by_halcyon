@@ -38,7 +38,9 @@ const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2,
 function frame() {
   requestAnimationFrame(frame);
   if (!started) return;
-  const t = STILL ? +STILL : time(), sc = scenes.find(s => t >= s.start && t < s.end) ?? scenes[scenes.length - 1];
+  const t = STILL ? +STILL : time(), i = scenes.findIndex(s => t >= s.start && t < s.end), sc = i < 0 ? scenes[scenes.length - 1] : scenes[i];
+  sc.prepare();                    // load + build the current scene (idempotent)
+  scenes[i + 1]?.prepare();        // ... and warm the next one during this scene, so the boundary has no hitch
   sc.render(scr, t - sc.start, t);
   for (let i = 0; i < W * H; i++) { const p = scr.idx[i] * 3; const r = scr.pal[p], g = scr.pal[p + 1], b = scr.pal[p + 2];
     rgba[i] = 0xff000000 | ((b << 2 | b >> 4) << 16) | ((g << 2 | g >> 4) << 8) | (r << 2 | r >> 4); }

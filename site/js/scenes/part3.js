@@ -2,9 +2,10 @@ import { loadP3, P3, TICK } from '../parts/p3.js';
 import { orderRow, ready } from '../musicpos.js';
 const START = 78.222;
 let p3 = null, loading = null;
-export const part3 = { name: 'part 3 — space', start: START, end: 113.778,
+const prepare = () => { loading ??= Promise.all([loadP3(), ready]).then(([a]) => { p3 = new P3(a); }); return loading; };
+export const part3 = { name: 'part 3 — space', start: START, end: 113.778, prepare,
   render(scr, lt, t) {
-    if (!p3) { loading ??= Promise.all([loadP3(), ready]).then(([a]) => { p3 = new P3(a); }); return; }
+    if (!p3) { prepare(); return; }
     const n = Math.floor(lt * TICK);
     if (n < p3.ticks) p3.reset();
     p3.advance(n, k => orderRow(START + k / TICK));

@@ -5,9 +5,10 @@ const TICK = 70.086, START = 135.111;
 // state at its first tick, read from the running original: [49ba8]=16, [49b8c]=120240, [49b90]=160320, [49948]=100, palette C all 0x3f
 const INIT = { stage: 100, ba8: 16, b8c: 120240, b90: 160320, white: true };
 let pi = null, loading = null;
-export const partI2 = { name: 'intro footage, again', start: START, end: 145.963,
+const prepare = () => { loading ??= Promise.all([loadI(), ready]).then(([a]) => { pi = new PI(a, INIT); }); return loading; };
+export const partI2 = { name: 'intro footage, again', start: START, end: 145.963, prepare,
   render(scr, lt, t) {
-    if (!pi) { loading ??= Promise.all([loadI(), ready]).then(([a]) => { pi = new PI(a, INIT); }); return; }
+    if (!pi) { prepare(); return; }
     const n = Math.floor(lt * TICK);
     if (n + 1 < pi.ticks) pi.reset();
     pi.advance(n + 1, k => orderRow(START + k / TICK));
