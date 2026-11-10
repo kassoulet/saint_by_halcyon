@@ -41,3 +41,6 @@ Details are in `docs/PROCESS.md`.
 ## Credits and rights
 
 All demo content belongs to its original authors. This repo is a preservation/educational port.
+
+## CRT option
+`demo.html` has a "CRT" checkbox (key `C`, remembered, off by default): a CSS overlay with soft scanlines (one band per source row, 200) and a faint vignette. When on, the stage is sized to an integer number of device pixels per source row so the lines never beat (moire); if the window gives less than 2 device px per row the option is disabled. Display only, the render is untouched. `F` now fullscreens the stage (so the overlay stays).

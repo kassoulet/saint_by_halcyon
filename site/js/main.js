@@ -8,6 +8,24 @@ const img = ctx.createImageData(W, H), rgba = new Uint32Array(img.data.buffer);
 const scr = { idx: new Uint8Array(W * H), pal: new Uint8Array(768) };   // 8-bit indexed + 6-bit-per-channel VGA palette, like the original
 const hud = document.getElementById('hud-time'), hudScene = document.getElementById('hud-scene');
 
+// CRT overlay (display only): scanline period = integer device px per source row, so no moire. Off by default.
+const stage = document.getElementById('stage'), cb = document.getElementById('crt-cb');
+try { cb.checked = localStorage.crt === '1'; } catch {}
+function crtLayout() {
+  const dpr = devicePixelRatio, fs = document.fullscreenElement === stage;
+  const maxW = fs ? innerWidth : Math.min(960, document.body.clientWidth), maxH = fs ? innerHeight : Math.min(innerHeight - stage.offsetTop - 40, maxW * 3 / 4);   // 40 = room for the HUD line
+  const k = Math.floor(Math.min(maxH, maxW * 3 / 4, fs ? innerWidth * 3 / 4 : 1e9) * dpr / H), ok = k >= 2;
+  cb.disabled = !ok; cb.parentNode.title = ok ? '' : 'window too small for the CRT effect';
+  const on = cb.checked && ok; stage.classList.toggle('crt', on);
+  stage.style.height = on ? `${k * H / dpr}px` : ''; stage.style.width = on ? `${k * H * 4 / 3 / dpr}px` : '';
+  stage.style.setProperty('--p', `${k / dpr}px`);
+}
+function crtSet() { try { localStorage.crt = cb.checked ? '1' : '0'; } catch {} crtLayout(); }
+cb.addEventListener('change', crtSet);
+addEventListener('resize', crtLayout); document.addEventListener('fullscreenchange', crtLayout);
+matchMedia(`(resolution: ${devicePixelRatio}dppx)`).addEventListener?.('change', crtLayout);
+crtLayout();
+
 const STILL = new URLSearchParams(location.search).get('still');   // ?still=SECONDS renders one moment without audio (debug / screenshots)
 let player, started = !!STILL, paused = false, tBase = 0, tCtx = 0;          // music time at audio-context time tCtx
 const now = () => (player?.context.currentTime ?? 0);
@@ -30,7 +48,8 @@ addEventListener('keydown', e => {
   if (e.code === 'Space' || e.code === 'KeyP') { e.preventDefault(); togglePause(); }
   else if (e.code === 'ArrowLeft') { e.preventDefault(); seek(-SEEK); }
   else if (e.code === 'ArrowRight') { e.preventDefault(); seek(SEEK); }
-  else if (e.code === 'KeyF') cv.requestFullscreen?.();
+  else if (e.code === 'KeyF') (document.fullscreenElement ? document.exitFullscreen() : stage.requestFullscreen?.());
+  else if (e.code === 'KeyC') { cb.checked = !cb.checked; crtSet(); }
 });
 if (STILL) document.getElementById('start').remove(); else document.getElementById('start').addEventListener('click', start);
 
