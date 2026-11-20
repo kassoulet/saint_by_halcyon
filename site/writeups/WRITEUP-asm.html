@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Saint (Halcyon &amp; Da Jormas, Assembly 1997): the assembly
+tricks</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  :root{--bg:#fff;--fg:#1d1d22;--mut:#666;--ac:#c4155a;--code:#f3f3f6;--bd:#d8d8e0}
+  @media (prefers-color-scheme:dark){:root{--bg:#0b0b10;--fg:#d8d8e0;--mut:#9a9aa8;--ac:#ff6a9a;--code:#17171f;--bd:#33333f}}
+  *{box-sizing:border-box}
+  body{margin:0 auto;max-width:62rem;padding:0 16px;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
+  #wunav{display:flex;gap:16px;flex-wrap:wrap;padding-top:12px;padding-bottom:8px;border-bottom:1px solid var(--bd);font-size:14px}
+  a{color:var(--ac)}
+  h1,h2,h3,h4{line-height:1.25;margin-top:1.8em}
+  img{max-width:100%;height:auto;image-rendering:auto}
+  pre{background:var(--code);border:1px solid var(--bd);border-radius:4px;padding:10px 12px;overflow-x:auto;font-size:13px;line-height:1.4}
+  code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:.92em;overflow-wrap:anywhere}
+  pre code{background:none;padding:0;overflow-wrap:normal}
+  table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}
+  td,th{border:1px solid var(--bd);padding:4px 8px}
+  blockquote{border-left:3px solid var(--bd);margin-left:0;padding-left:14px;color:var(--mut)}
+  #TOC{font-size:14px}#TOC ul{padding-left:1.2em}
+  #TOC>ul{padding-left:0;list-style:none}
+  details#toc-box{margin:12px 0}
+  </style>
+</head>
+<body>
+<nav id="wunav"><a href="../index.html">&larr; the demo</a> <a href="WRITEUP-asm.html">asm</a> <a href="WRITEUP-effects.html">effects</a> <a href="https://github.com/kassoulet/saint_by_halcyon">README on GitHub</a></nav>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a
+href="#saint-halcyon--da-jormas-assembly-1997-the-assembly-tricks"
+id="toc-saint-halcyon--da-jormas-assembly-1997-the-assembly-tricks">Saint
+(Halcyon &amp; Da Jormas, Assembly 1997): the assembly tricks</a>
+<ul>
+<li><a
+href="#1-the-tunnel-pixel-loop-an-index-built-from-register-moves-0x2cddc0x2cfc5"
+id="toc-1-the-tunnel-pixel-loop-an-index-built-from-register-moves-0x2cddc0x2cfc5">1.
+The tunnel pixel loop: an index built from register moves
+(0x2cddc..0x2cfc5)</a></li>
+<li><a
+href="#2-perspective-correct-textured-triangles-with-a-carry-chain-0x20679-tmapasm"
+id="toc-2-perspective-correct-textured-triangles-with-a-carry-chain-0x20679-tmapasm">2.
+Perspective-correct textured triangles with a carry chain (0x20679,
+<code>tmap.asm</code>)</a></li>
+<li><a
+href="#3-the-remap-loop-for-translucent-triangles-and-glows-0x1fddb0x1fde4"
+id="toc-3-the-remap-loop-for-translucent-triangles-and-glows-0x1fddb0x1fde4">3.
+The remap loop for translucent triangles and glows
+(0x1fddb..0x1fde4)</a></li>
+<li><a
+href="#4-the-anti-aliased-line-drawer-with-self-modified-immediates-0x293a40x295e3-x-major-0x295e60x2967e"
+id="toc-4-the-anti-aliased-line-drawer-with-self-modified-immediates-0x293a40x295e3-x-major-0x295e60x2967e">4.
+The anti-aliased line drawer with self-modified immediates
+(0x293a4..0x295e3, x-major 0x295e6..0x2967e)</a></li>
+<li><a href="#5-two-pass-radix-sort-of-8-byte-records-0x170f70x171ee"
+id="toc-5-two-pass-radix-sort-of-8-byte-records-0x170f70x171ee">5.
+Two-pass radix sort of 8-byte records (0x170f7..0x171ee)</a></li>
+<li><a
+href="#6-fast-1sqrt-with-a-generated-table-0x29343-generator-0x29300"
+id="toc-6-fast-1sqrt-with-a-generated-table-0x29343-generator-0x29300">6.
+Fast 1/sqrt with a generated table (0x29343, generator 0x29300)</a></li>
+<li><a href="#7-frame-start-copy-and-clear-in-the-same-loop-0x2c8ac"
+id="toc-7-frame-start-copy-and-clear-in-the-same-loop-0x2c8ac">7. Frame
+start: copy and clear in the same loop (0x2c8ac)</a></li>
+<li><a
+href="#8-the-isr-palette-blend-three-palettes-one-multiply-per-channel-step-0x42240"
+id="toc-8-the-isr-palette-blend-three-palettes-one-multiply-per-channel-step-0x42240">8.
+The ISR palette blend: three palettes, one multiply per channel step
+(0x42240)</a></li>
+<li><a href="#9-the-intro-smear-filters-with-interleaved-tables-0x4ba97"
+id="toc-9-the-intro-smear-filters-with-interleaved-tables-0x4ba97">9.
+The intro: smear filters with interleaved tables (0x4ba97..)</a></li>
+<li><a href="#what-was-not-verified" id="toc-what-was-not-verified">What
+was not verified</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1
+id="saint-halcyon--da-jormas-assembly-1997-the-assembly-tricks">Saint
+(Halcyon &amp; Da Jormas, Assembly 1997): the assembly tricks</h1>
+<p>Notes on the inner loops of <code>SAINT.EXE</code>, found by
+disassembling the 32-bit flat program (capstone) and checked against the
+raw EXE bytes. Addresses are <strong>program offsets</strong> (the
+Blinker BL20 stub is followed by an uncompressed PMODE flat program:
+file offset = <code>0x1d45 + program offset</code>, guest RAM =
+<code>0xb9c0 + offset</code>). The disassemblies are in
+<code>work/*.asm</code>. Every snippet below was re-read from the EXE;
+nothing was run on the original except where a section says "model".</p>
+<p>The recurring idea: <strong>never build an index with shifts and
+masks when a register half can be loaded directly</strong>. The 64
+KB-aligned tables (texture + shade table, filter table) let the code
+assemble a 16-bit table index with <code>mov al/ah/ax</code>, and the
+CPU does the rest.</p>
+<h2
+id="1-the-tunnel-pixel-loop-an-index-built-from-register-moves-0x2cddc0x2cfc5">1.
+The tunnel pixel loop: an index built from register moves
+(0x2cddc..0x2cfc5)</h2>
+<p>Each 8x8 block of the 320x200 tunnel is interpolated bilinearly in
+16.16 fixed point, then every pixel does two table lookups,
+<code>shade[z][tex[v][u]]</code>:</p>
+<pre><code>mov  eax,[0x4670]        ; texture base, 64K aligned: the high half stays constant
+...
+mov  ax,si               ; fill the low 16 bits from the interpolators
+mov  al,ch               ; (the later byte moves overwrite al/ah)
+mov  al,[eax]            ; texel = tex[v][u]
+mov  ah,dh               ; ah = shade level (z)
+mov  bl,[eax+0x10000]    ; shade table lives 64K after the texture
+...
+mov  [edi],bx            ; two pixels per store
+add  edi,0x138           ; next row of the block (320-8)</code></pre>
+<p>Why it is clever: there is no <code>and</code>, no <code>shl</code>,
+no <code>or</code>. The texture is 256x256 = 64 KB and 64 KB-aligned, so
+<code>eax</code>'s low 16 bits form the table index once <code>al</code>
+and <code>ah</code> are filled from the high bytes of the interpolators,
+with no masking. The shade table sits at <code>tex+0x10000</code>, so
+the second lookup reuses the same <code>eax</code> with only
+<code>ah</code> replaced by the level. Pixels are paired in
+<code>bx</code> (<code>bl</code>, <code>bh</code>) for one 16-bit store.
+Rows per block are counted in <code>[0x2be98]</code> (8), the per-row
+step count is <code>(R-L)&gt;&gt;11</code> with <code>sar 8</code> on
+the accumulators.</p>
+<h2
+id="2-perspective-correct-textured-triangles-with-a-carry-chain-0x20679-tmapasm">2.
+Perspective-correct textured triangles with a carry chain (0x20679,
+<code>tmap.asm</code>)</h2>
+<pre><code>mov  eax,[0x1f928]       ; constant: texture base, 64K aligned
+mov  ah,ch               ; v
+mov  bh,dl               ; high byte of the third index
+inc  edi
+add  ecx,[0x1fa28]       ; du  (low part)
+mov  al,[ebx]
+adc  edx,[0x1fa2c]       ; dv, carry from the previous add
+mov  al,[eax]            ; shade / texel lookup
+adc  bl,[0x1fa30]        ; third accumulator, carry from the second
+mov  [edi],al</code></pre>
+<p>Why it is clever: three accumulators (<code>ecx</code>,
+<code>edx</code>, <code>bl</code>) are updated with an <code>add</code>
+/ <code>adc</code> / <code>adc</code> chain, so the fractional overflow
+of one is the carry into the next. That is a multi-word fixed-point DDA
+with no extra instructions for carries. The loop is unrolled, with one
+real division every 16 pixels (the usual perspective-correct scheme).
+<code>engine/texmap.js</code> reproduces the carry chain exactly, so the
+JS and the EXE agree on the rounding of every texel step.</p>
+<h2
+id="3-the-remap-loop-for-translucent-triangles-and-glows-0x1fddb0x1fde4">3.
+The remap loop for translucent triangles and glows
+(0x1fddb..0x1fde4)</h2>
+<pre><code>mov  al,[edi]            ; current framebuffer pixel
+inc  edi
+dec  ecx
+mov  al,[eax]            ; filter[level][pixel]
+mov  [edi-1],al</code></pre>
+<p>with <code>eax = [0x48bc]</code> (the 64 KB-aligned filter table, 64
+levels x 256 pixels) and the level made by
+<code>mov ah,cl; shr ah,2</code> (0..63). The "translucent" crystals of
+part 1 are therefore not an alpha blend at all: the screen byte is
+looked up in a pre-computed palette-to-palette table, which is only
+possible because the palette is the same for all pixels. The triangle
+setup is just as lean: vertex sort by three compare/<code>xchg</code>
+pairs (0x1fc7b), and the side of the long edge is chosen by
+<code>test [0x48d0],0x80000000</code> followed by one
+<code>xchg ecx,edx</code>.</p>
+<h2
+id="4-the-anti-aliased-line-drawer-with-self-modified-immediates-0x293a40x295e3-x-major-0x295e60x2967e">4.
+The anti-aliased line drawer with self-modified immediates
+(0x293a4..0x295e3, x-major 0x295e6..0x2967e)</h2>
+<p>On entry the drawer patches the filter-table address into the
+code:</p>
+<pre><code>mov  ecx,0x12345678      ; imm32 patched at 0x295d8 / 0x29670  (= [0x48bc])
+mov  dl,[edx+0x12345678] ; imm32 patched at 0x295c2 / 0x29654  (= [0x48bc] + 0x1f)</code></pre>
+<p>Absolute values come from <code>cdq / xor / sub</code>. The 16.16
+coordinate gives a 5-bit fraction with
+<code>shr edx,0xb; and edx,0x1f</code>. Then:</p>
+<pre><code>sub  ecx,edx             ; 31-frac
+mov  ch,[pix]            ; ... build (31-frac)&lt;&lt;8 | pixel with a byte move
+xchg ch,cl
+mov  dh,[pix+1]          ; build frac&lt;&lt;8 | pixel for the neighbour
+xchg dh,dl</code></pre>
+<p>The two neighbouring pixels are each remapped through a filter-table
+row (<code>31-frac</code> and <code>frac</code>) and written back
+additively, which is exactly the two-pixel coverage split of a Wu line.
+The table does the intensity maths; the loop contains no multiply.
+Patching immediates instead of keeping the table pointer in a register
+frees <code>ebx</code>/<code>esi</code> for the DDA, and
+<code>engine/lines.js</code> mirrors the same arithmetic.</p>
+<h2 id="5-two-pass-radix-sort-of-8-byte-records-0x170f70x171ee">5.
+Two-pass radix sort of 8-byte records (0x170f7..0x171ee)</h2>
+<p>The depth sort of the object list is a counting sort on a 16-bit key,
+8 bits at a time, ping-ponging between two buffers
+(<code>[0x16634]</code> and <code>[0x16638]</code>):</p>
+<ul>
+<li>histogram at <code>0x16a44</code>, prefix offsets at
+<code>0x16644</code> (<code>shl edx,3</code>: records are 8 bytes, so
+the offset is premultiplied),</li>
+<li>pass 1 keys on the low byte (<code>dl = al</code>), pass 2 on the
+next byte (<code>mov dl,ah</code>, with <code>inc esi</code> in the
+histogram loop).</li>
+</ul>
+<p>It is stable and O(n) with no comparisons. The JS port uses a stable
+sort on the 16-bit key, which gives the same order.</p>
+<h2
+id="6-fast-1sqrt-with-a-generated-table-0x29343-generator-0x29300">6.
+Fast 1/sqrt with a generated table (0x29343, generator 0x29300)</h2>
+<p>The face normal of every triangle is normalised with a table lookup
+instead of <code>fsqrt</code>/<code>fdiv</code>. The generator
+(<code>esi=0</code>, 0x2000 entries at 0x21300) fills</p>
+<pre><code>table[k] = (bits(1/sqrt(float((k&lt;&lt;11) | 0x3f000000))) + 0x200) &amp; 0x7ff800</code></pre>
+<p>and the function does</p>
+<pre><code>ecx = 0x5f000000 - ((x&gt;&gt;1) &amp; 0x3fc00000)      ; halve the exponent, negate
+ecx &amp;= 0xff800000
+ecx |= table[(x&gt;&gt;9) &amp; 0x7ffc]                 ; mantissa from the table</code></pre>
+<p>The result is used at 0x17329 to normalise the cross product, then
+scaled by 63 (0x1725c) to give the 0..63 shade level of the flat-shaded
+faces.</p>
+<p><strong>This is a model, not a run on the original.</strong> In a
+simulation of the formula, the maximum relative error is 1.8e-4 over
+300k log-uniform inputs. The exception is the rare bins whose left-edge
+value is an exact power of two (x in [4^n, 4^n(1+2^-11)) come out at
+half the value, e.g. x = 1.0 gives 0.5), about 0.02% of the inputs. The
+exponent trick and the table are the verified parts (read from the
+bytes); the error figures are from the model.</p>
+<h2 id="7-frame-start-copy-and-clear-in-the-same-loop-0x2c8ac">7. Frame
+start: copy and clear in the same loop (0x2c8ac)</h2>
+<pre><code>mov  eax,[esi]           ; background
+mov  [esi],ebp           ; ebp = 0: clear the source
+mov  [edi],eax           ; copy to the frame</code></pre>
+<p>8 bytes per iteration, <code>0x1f40</code> iterations = 64000 bytes.
+One pass over memory copies one buffer (<code>[esi]</code>) to the other
+(<code>[edi]</code>) and zeroes the source with <code>ebp</code>.</p>
+<h2
+id="8-the-isr-palette-blend-three-palettes-one-multiply-per-channel-step-0x42240">8.
+The ISR palette blend: three palettes, one multiply per channel step
+(0x42240)</h2>
+<p>The retrace ISR (part C shown; every part has the same scheme) walks
+the 768 DAC values with a negative index that doubles as the loop
+test:</p>
+<pre><code>esi runs from 0xfffffd00 up to 0 (768 entries); inc esi / jne
+mov  al,[esi+0x3f6e0]    ; palette A
+mov  bl,[esi+0x3f9e0]    ; palette B
+mov  cl,[esi+0x3fce0]    ; palette C
+sub  eax,ebx ; imul eax,edi ; sar eax,0xa ; add eax,ebx    ; lerp(A,B, edi/1024)
+sub  eax,ecx ; imul eax,ebp ; sar eax,0xa ; add eax,ecx    ; lerp(.,C, ebp/1024)
+out  dx,al               ; DAC data port 0x3c9</code></pre>
+<p>Why it is clever: <code>x = b + ((a-b)*t &gt;&gt; 10)</code> is one
+<code>sub</code>, one <code>imul</code>, one <code>sar</code>, one
+<code>add</code> per lerp, and the blend is evaluated per tick, so
+fades, the white flash and the A/B pulse are all just two numbers
+(<code>edi</code>, <code>ebp</code>, range 0..1023) changed by the tick
+code. The loop index counts up to zero, so <code>jne</code> is free
+after <code>inc</code>. The JS port replicates it in
+<code>palette()</code>; the palettes were found equal in all the checked
+frames.</p>
+<h2 id="9-the-intro-smear-filters-with-interleaved-tables-0x4ba97">9.
+The intro: smear filters with interleaved tables (0x4ba97..)</h2>
+<p>The intro (footage frame = floor(tick/7) mod 142) is stored as nibble
+RLE (escape <code>0xf0</code>, decoder at 0x4bb88), upsampled 2x with
+<code>shl 3</code> and shift-averages (0x4bbd7), then smoothed by two
+passes (0x4bc98 and 0x4bcd4):</p>
+<pre><code>mov  cl,[esi-0x13e]      ; pixel above-left
+mov  ch,[edi]            ; ...
+mov  dl,[esi]
+mov  dh,ch
+mov  ah,ch
+mov  ebx,[ecx*8+IMM]     ; T0/T1 interleaved, stride 8 (IMM patched at 0x4bca9, 0x4bcb1, ...)
+add  ebx,[edx*8+IMM]
+mov  dl,bh               ; bh = sum&gt;&gt;8 for free
+mov  ebx,[eax*8+IMM]
+add  ebx,[edx*8+IMM]
+mov  al,bh
+mov  [esi-1],bh</code></pre>
+<p>The tables are <code>T0[h][l] = h*l</code> (0 for h=255) and
+<code>T1[h][l] = (255-h)*l</code>: a multiply by a weight and by its
+complement, so each lookup yields a partial product and the
+<code>add</code> of two lookups is a blend. Interleaving T0 and T1 at
+stride 8 lets one scaled index (<code>ecx*8</code>) address both in one
+dword read, and <code>bh</code> holds the sum divided by 256 without any
+shift. The second pass runs backwards (<code>+0x13e</code>), so the
+smear propagates in both directions.</p>
+<h2 id="what-was-not-verified">What was not verified</h2>
+<ul>
+<li>Cycle counts: none measured; the claims are about instruction
+structure, not speed.</li>
+<li>The rsqrt error figures (section 6) come from a model.</li>
+<li>The self-modified addresses were read from the EXE bytes, not
+observed at run time.</li>
+</ul>
+</body>
+</html>

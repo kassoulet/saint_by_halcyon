@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Saint (Halcyon &amp; Da Jormas, Assembly 1997): the
+effects</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+  :root{--bg:#fff;--fg:#1d1d22;--mut:#666;--ac:#c4155a;--code:#f3f3f6;--bd:#d8d8e0}
+  @media (prefers-color-scheme:dark){:root{--bg:#0b0b10;--fg:#d8d8e0;--mut:#9a9aa8;--ac:#ff6a9a;--code:#17171f;--bd:#33333f}}
+  *{box-sizing:border-box}
+  body{margin:0 auto;max-width:62rem;padding:0 16px;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,sans-serif}
+  #wunav{display:flex;gap:16px;flex-wrap:wrap;padding-top:12px;padding-bottom:8px;border-bottom:1px solid var(--bd);font-size:14px}
+  a{color:var(--ac)}
+  h1,h2,h3,h4{line-height:1.25;margin-top:1.8em}
+  img{max-width:100%;height:auto;image-rendering:auto}
+  pre{background:var(--code);border:1px solid var(--bd);border-radius:4px;padding:10px 12px;overflow-x:auto;font-size:13px;line-height:1.4}
+  code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:.92em;overflow-wrap:anywhere}
+  pre code{background:none;padding:0;overflow-wrap:normal}
+  table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}
+  td,th{border:1px solid var(--bd);padding:4px 8px}
+  blockquote{border-left:3px solid var(--bd);margin-left:0;padding-left:14px;color:var(--mut)}
+  #TOC{font-size:14px}#TOC ul{padding-left:1.2em}
+  #TOC>ul{padding-left:0;list-style:none}
+  details#toc-box{margin:12px 0}
+  </style>
+</head>
+<body>
+<nav id="wunav"><a href="../index.html">&larr; the demo</a> <a href="WRITEUP-asm.html">asm</a> <a href="WRITEUP-effects.html">effects</a> <a href="https://github.com/kassoulet/saint_by_halcyon">README on GitHub</a></nav>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#saint-halcyon--da-jormas-assembly-1997-the-effects"
+id="toc-saint-halcyon--da-jormas-assembly-1997-the-effects">Saint
+(Halcyon &amp; Da Jormas, Assembly 1997): the effects</a>
+<ul>
+<li><a href="#at-a-glance" id="toc-at-a-glance">At a glance</a></li>
+<li><a href="#display-and-timing" id="toc-display-and-timing">Display
+and timing</a></li>
+<li><a href="#timeline" id="toc-timeline">Timeline</a></li>
+<li><a href="#the-tunnel-rays-through-a-41x26-grid"
+id="toc-the-tunnel-rays-through-a-41x26-grid">The tunnel: rays through a
+41x26 grid</a></li>
+<li><a href="#per-part-effects" id="toc-per-part-effects">Per-part
+effects</a>
+<ul>
+<li><a href="#intro" id="toc-intro">Intro</a></li>
+<li><a href="#part-1-the-crystal-tunnel"
+id="toc-part-1-the-crystal-tunnel">Part 1: the crystal tunnel</a></li>
+<li><a href="#part-2-orange-tunnel-and-the-star"
+id="toc-part-2-orange-tunnel-and-the-star">Part 2: orange tunnel and the
+star</a></li>
+<li><a href="#part-3-space-tunnel" id="toc-part-3-space-tunnel">Part 3:
+space tunnel</a></li>
+<li><a href="#part-d-metaballs" id="toc-part-d-metaballs">Part D:
+metaballs</a></li>
+<li><a href="#part-a-landscape" id="toc-part-a-landscape">Part A:
+landscape</a></li>
+<li><a href="#part-b-cone-of-lines-and-shards"
+id="toc-part-b-cone-of-lines-and-shards">Part B: cone of lines and
+shards</a></li>
+<li><a href="#part-e-sphere-in-a-box"
+id="toc-part-e-sphere-in-a-box">Part E: sphere in a box</a></li>
+<li><a href="#part-f-the-cave" id="toc-part-f-the-cave">Part F: the
+cave</a></li>
+<li><a href="#part-c-plane-tunnel-gem-dancer"
+id="toc-part-c-plane-tunnel-gem-dancer">Part C: plane tunnel, gem,
+dancer</a></li>
+<li><a href="#hidden-feature" id="toc-hidden-feature">Hidden
+feature</a></li>
+</ul></li>
+<li><a href="#what-is-exact-and-what-is-approximated"
+id="toc-what-is-exact-and-what-is-approximated">What is exact and what
+is approximated</a>
+<ul>
+<li><a href="#not-reproduced" id="toc-not-reproduced">Not
+reproduced</a></li>
+</ul></li>
+<li><a href="#the-art" id="toc-the-art">The art</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="saint-halcyon--da-jormas-assembly-1997-the-effects">Saint
+(Halcyon &amp; Da Jormas, Assembly 1997): the effects</h1>
+<p>Saint is a DOS demo by Halcyon &amp; Da Jormas (Assembly 1997 final).
+It uses mode 13h (320x200, 256 colours) and a 32-bit protected-mode flat
+program (PMODE). This document explains what is on screen, how each
+effect works, and what the JS port reproduces exactly. The assembly side
+is in <a href="WRITEUP-asm.html"><code>WRITEUP-asm.md</code></a>; the
+long-form process log is <code>docs/PROCESS.md</code>.</p>
+<h2 id="at-a-glance">At a glance</h2>
+<p>Every part of the demo is the same engine, a "halcyon super kolmedee
+enkine (tm)" (the banner string in the EXE): a tunnel renderer drawn
+through a 41x26 grid of warped rays, plus a depth-sorted list of 3D
+objects drawn on top. All looks come from a handful of 256x256 textures,
+a palette fade, and a few meshes.</p>
+<p><img src="figures/saint_pictures.png"
+alt="The seven full-screen pictures" /></p>
+<p><img src="figures/saint_textures.png"
+alt="The nine 256x256 textures" /></p>
+<p><img src="figures/saint_meshes.png"
+alt="Six of the meshes as wireframes" /></p>
+<h2 id="display-and-timing">Display and timing</h2>
+<ul>
+<li><strong>Aspect ratio.</strong> Mode 13h pixels are not square on a
+4:3 monitor: 320x200 is shown at 4:3 (each pixel about 1.2x taller than
+wide). The figures above are already drawn at 4:3.</li>
+<li><strong>Clock.</strong> The original advances on a 70.086 Hz retrace
+tick (the ISR does the palette blend and the part state). The port uses
+the S3M music (libopenmpt via chiptune3) as the master clock: the demo
+is S3M order/row driven, so tick = music position.</li>
+<li><strong>Rows are not equal.</strong> Orders 12-27 have 64 rows of
+55.6 ms, the others about 110 ms. <code>row_times.json</code> and
+<code>order_times.json</code> give the exact times used.</li>
+<li><strong>Seek and pause.</strong> Seek = replay the part from its
+start up to the target tick (some state, like the part E sphere
+rotation, depends on frame history). Pause stops the music clock.</li>
+</ul>
+<h2 id="timeline">Timeline</h2>
+<p>Times are music seconds in the port
+(<code>scenes/index.js</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Start</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>intro</td>
+<td>0</td>
+<td>smeared footage, 142 frames, 2x upsampled</td>
+</tr>
+<tr>
+<td>part 1</td>
+<td>14.222</td>
+<td>"saint" tunnel with translucent crystals</td>
+</tr>
+<tr>
+<td>part 2</td>
+<td>35.111</td>
+<td>orange tunnel, textured star</td>
+</tr>
+<tr>
+<td>part 3</td>
+<td>78.222</td>
+<td>space tunnel with girders and wire tubes</td>
+</tr>
+<tr>
+<td>D</td>
+<td>113.778</td>
+<td>metaballs through the grid</td>
+</tr>
+<tr>
+<td>A</td>
+<td>120.889</td>
+<td>textured landscape</td>
+</tr>
+<tr>
+<td>B</td>
+<td>128</td>
+<td>cylinder with a cone of lines and shards</td>
+</tr>
+<tr>
+<td>intro again</td>
+<td>135.111</td>
+<td>repeat of the intro</td>
+</tr>
+<tr>
+<td>E</td>
+<td>145.963</td>
+<td>textured sphere inside a box</td>
+</tr>
+<tr>
+<td>F</td>
+<td>182.326</td>
+<td>textured cave lit by a rotating star</td>
+</tr>
+<tr>
+<td>C</td>
+<td>211.417</td>
+<td>plane tunnel melting into a sphere, gem, dancer, final picture</td>
+</tr>
+<tr>
+<td>end</td>
+<td>262.3</td>
+<td>final picture held 10 s (700 ticks)</td>
+</tr>
+</tbody>
+</table>
+<p><code>docs/PROCESS.md</code> section 12 lists older times on a
+different clock (intro 0-21.333, P1 to 42.222, P2 to 81.778, P3 to
+117.333, D to 124.444, A to 131.556, B to 138.69, intro 2 to 153.236, E
+to 189.599, F to 218.69, C to 262.3). The two lists disagree (the older
+one is on a different clock), so the table above follows the port
+code.</p>
+<h2 id="the-tunnel-rays-through-a-41x26-grid">The tunnel: rays through a
+41x26 grid</h2>
+<p>The screen is cut into 8x8 blocks, so only 41x26 vertices need real
+work. Per vertex the code rotates the grid point by the camera matrix,
+adds the camera position, casts the ray from the camera through it, and
+calls a <strong>warp</strong> that returns <code>(u, v, shade)</code> of
+the hit point. The rest is cheap interpolation.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">// engine/tunnel.js</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> P <span class="op">=</span> [M0<span class="op">*</span>x<span class="op">+</span>M1<span class="op">*</span>y<span class="op">+</span>M2<span class="op">*</span>z<span class="op">+</span>O0<span class="op">,</span> <span class="op">...</span>]<span class="op">;</span>       <span class="co">// grid point in world space</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">let</span> r <span class="op">=</span> <span class="fu">warp</span>(O<span class="op">,</span> P<span class="op">,</span> k)<span class="op">;</span>                    <span class="co">// -&gt; [u, v, shade]</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>V[i] <span class="op">=</span> <span class="bu">Math</span><span class="op">.</span><span class="fu">round</span>(r <span class="op">*</span> <span class="dv">65535</span>)<span class="op">;</span>             <span class="co">// 16.16 fixed point</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">blit8</span>(out<span class="op">,</span> V<span class="op">,</span> tex<span class="op">,</span> shade)<span class="op">;</span>                <span class="co">// bilinear over each 8x8 block, then shade[z][tex[v][u]]</span></span></code></pre></div>
+<p>The five warps (offsets in the program):</p>
+<ul>
+<li><strong>0x29d9a cylinder</strong> (radius 32 around z): quadratic
+ray hit, <code>u = |atan2(...)|/pi*255</code>, <code>v</code> along the
+axis, with a sinusoidal wobble on the hit parameter <code>t</code>.</li>
+<li><strong>0x29f62 cylinder without wobble</strong> (part B).</li>
+<li><strong>0x2a0f5 plane z = -400</strong>: hit point, with a "water"
+wobble <code>sin(hx*w1)*w2 + cos(hy*w1)*w2</code> on <code>t</code>;
+<code>u,v = hit*0.16 + 128</code>.</li>
+<li><strong>0x2a22a plane z = -300</strong> (part C):
+<code>u,v = hit*0.16 + 128</code>, fog
+<code>63 - min(-600 t, 63)</code>.</li>
+<li><strong>0x2a30b sphere</strong> (radius <code>sqrt(190000)</code>):
+the camera is inside, <code>u,v</code> from the hit coordinates.</li>
+</ul>
+<p>The shade is a fog value 0..63 from the hit distance, so distant
+parts of the tunnel go dark through the shade table. Two warps can be
+morphed by blending their <code>(u,v,shade)</code> outputs in float32
+(<code>new*b + old*(1-b)</code>), which is how the plane turns into the
+cylinder in part 1 and the plane into the sphere in part C.</p>
+<p>The sphere wobble reads a leftover float (<code>[0x296b0]</code>) in
+the original; the port reproduces it as the constant 1042.643.</p>
+<h2 id="per-part-effects">Per-part effects</h2>
+<h3 id="intro">Intro</h3>
+<p>Footage stored as nibble RLE, upsampled 2x and smeared by two
+table-driven filter passes (see the asm write-up, section 9). The frame
+shown is <code>floor(tick/7) mod 142</code>. The palette is driven by
+the same ISR blend as everywhere else.</p>
+<h3 id="part-1-the-crystal-tunnel">Part 1: the crystal tunnel</h3>
+<p>A plane warp morphs into a cylinder warp (<code>blendOn</code> starts
+at spline index 0x140 and lasts 500 ticks). 33 translucent
+filter-triangle crystals and 33 flares are placed in a cluster that
+rotates around Z by <code>0x4d9/65536</code> rad per tick. The camera
+follows a Catmull-Rom spline (0x1f2c0) with a look-at matrix (0x15d91).
+The palette A/B pulses (<code>1023 - (cos(pulse)*511 + 511)</code>), the
+screen flashes black in the last rows of order 4 and fades to white from
+order 5, row 0x30. Part 1 ends at order 5, row 60.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode js"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">// parts/p1_tick.js, per tick</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>S<span class="op">.</span><span class="at">rot</span> <span class="op">+=</span> <span class="bn">0x4d9</span><span class="op">;</span>                                <span class="co">// cluster rotation</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>S<span class="op">.</span><span class="at">t1</span> <span class="op">+=</span> s<span class="op">;</span> S<span class="op">.</span><span class="at">t2</span> <span class="op">+=</span> s<span class="op">;</span>                          <span class="co">// camera speed rises while the ramp is open</span></span></code></pre></div>
+<p>The crystals are not alpha-blended: each pixel under a triangle is
+remapped through the 64-level filter table (asm write-up, section
+3).</p>
+<h3 id="part-2-orange-tunnel-and-the-star">Part 2: orange tunnel and the
+star</h3>
+<p>Cylinder-to-sphere tunnel, 50 dust glows from an LCG, and a
+105-vertex / 206-face star whose vertices are
+<code>shapeA*w + shapeB*(1-w)</code> with
+<code>w = 4*sin(3*sin(a)*cos(b))</code>. The star is drawn with a
+perspective-correct textured Gouraud rasteriser (0x1fefc), intensity
+<code>I = 128*(d.N)/|d|^2</code>. A logo sprite is composited on
+top.</p>
+<h3 id="part-3-space-tunnel">Part 3: space tunnel</h3>
+<p>A sphere-warp tunnel with a flat-shaded girder mesh (1232 vertices,
+2464 triangles), three anti-aliased wire tubes (80 vertices, 152 lines
+each in the figure) and 50 dust glows. Two camera paths A and B are cut
+by a script table (<code>[0x33c20]</code>). Overlay sprites (the 8-ball
+and "chemical floors" image, 0x189197) come on top. Each face has a glow
+level that decays to a floor of 16 or 24.</p>
+<h3 id="part-d-metaballs">Part D: metaballs</h3>
+<p>A two-centre distortion is drawn through the same 41x26 grid
+(formulas in <code>parts/pd.js</code>), so the "metaballs" are really
+texture coordinates bent around two points. Text sprites appear on a
+schedule. The grid is built after the blit, so each frame shows the grid
+of the previous tick.</p>
+<h3 id="part-a-landscape">Part A: landscape</h3>
+<p>A textured Gouraud landscape (203 vertices, 353 faces) with a light
+at <code>[0x4950] = 192</code>, the camera moving
+<code>t += 0.0173</code> per tick.</p>
+<h3 id="part-b-cone-of-lines-and-shards">Part B: cone of lines and
+shards</h3>
+<p>A cylinder warp without wobble, a grid cone made of <code>Line</code>
+objects (anti-aliased wire) and filter-triangle shards.</p>
+<h3 id="part-e-sphere-in-a-box">Part E: sphere in a box</h3>
+<p>A textured sphere clamped by an invisible box (half-size
+<code>[0x48c4]</code>) with cumulative rotation, a grid cage and a bull
+sprite overlay (0x1b88b5). The rotation is <strong>stateful</strong>:
+the state depends on the whole frame history, so seeking replays from
+the start of the part.</p>
+<h3 id="part-f-the-cave">Part F: the cave</h3>
+<p>A textured cave (193 vertices, 398 faces) lit by a rotating glowing
+star, and a 1-bit overlay at the end.</p>
+<h3 id="part-c-plane-tunnel-gem-dancer">Part C: plane tunnel, gem,
+dancer</h3>
+<p>A plane tunnel melting into a sphere (cross-fade by
+<code>1/1050</code> per tick after spline index 0x410), a gem (310
+vertices, 616 faces) with five pentagon stars, 36 shards, a directional
+sprite (0x296d8: one of 40 views chosen from <code>atan2</code>), a
+dancer strip, and the final picture (image 0xcb4b9).</p>
+<h3 id="hidden-feature">Hidden feature</h3>
+<p>Pressing keys toggles warps (<code>[0x41c4..c6]</code>) and palettes
+(<code>[0x419b..]</code>). The strings in the EXE also contain decoys
+such as <code>ratavek.juu</code>.</p>
+<h2 id="what-is-exact-and-what-is-approximated">What is exact and what
+is approximated</h2>
+<p>Differences against the Unicorn emulation of the original,
+<strong>per 64000-pixel frame</strong>. These numbers are copied from
+<code>docs/PROCESS.md</code> (sections 6, 7, 10, 11); the reference
+snapshots are not present in this tree, so they were not re-run for this
+write-up.</p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Differing pixels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>intro</td>
+<td>0</td>
+</tr>
+<tr>
+<td>D</td>
+<td>0</td>
+</tr>
+<tr>
+<td>P3</td>
+<td>0 (900 ticks of ISR also identical)</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>tunnel exact; whole frame 1 pixel off</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>tunnel 8</td>
+</tr>
+<tr>
+<td>B</td>
+<td>2</td>
+</tr>
+<tr>
+<td>E</td>
+<td>40-80</td>
+</tr>
+<tr>
+<td>C</td>
+<td>3-344</td>
+</tr>
+<tr>
+<td>F</td>
+<td>270-1500</td>
+</tr>
+<tr>
+<td>A</td>
+<td>about 700</td>
+</tr>
+</tbody>
+</table>
+<p>The textured-triangle rasteriser was validated on 40/40 and 160/177
+triangles identical, the others differing by 1-3 pixels
+(extended-precision rounding). Palettes were always equal. The FPU model
+matters: the drawing stage runs in round-toward-zero with a 24-bit
+mantissa (set by PMODE), and <code>engine/texmap.js</code> follows
+that.</p>
+<p>Objects and tables built at load time by the original
+(<code>tex.bin</code>, <code>shade.bin</code>, <code>filter.bin</code>,
+<code>sprites.bin</code>, <code>objects.json</code>) are exported from
+snapshots, not regenerated.</p>
+<h3 id="not-reproduced">Not reproduced</h3>
+<ul>
+<li>Sub-tick effects of the real machine (the ISR runs asynchronously on
+the original).</li>
+<li>The roughly 0.4 s silent load between the intro and part 1.</li>
+</ul>
+<h2 id="the-art">The art</h2>
+<p>17 ColoRIX images (<code>RIX3</code>, width and height as 16-bit
+values, a 768-byte 6-bit VGA palette, then <code>w*h</code> pixels at
+offset +778) are embedded in the EXE; <code>tools/extract_rix.py</code>
+extracts them to <code>site/assets/img</code>. The nine 256x256 ones are
+the tunnel textures, byte-exact matches of the per-part
+<code>tex.bin</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Image offset</th>
+<th>Part</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x1f533d</td>
+<td>P1</td>
+</tr>
+<tr>
+<td>0x205647</td>
+<td>P2</td>
+</tr>
+<tr>
+<td>0x225c5b</td>
+<td>P3</td>
+</tr>
+<tr>
+<td>0x1d4d29</td>
+<td>A</td>
+</tr>
+<tr>
+<td>0x1e5033</td>
+<td>B</td>
+</tr>
+<tr>
+<td>0xe15e3</td>
+<td>C</td>
+</tr>
+<tr>
+<td>0x215951</td>
+<td>D</td>
+</tr>
+<tr>
+<td>0x235f65</td>
+<td>E</td>
+</tr>
+<tr>
+<td>0x26692f</td>
+<td>F</td>
+</tr>
+</tbody>
+</table>
+<p>Also byte-exact: part 2 overlay = 0x1a8bab, bull = 0x1b88b5, part D
+sheet = 0xf18ed, part 3 overlay = 0x189197, and the final picture starts
+with 0xcb4b9. Not confirmed: the part 1 overlay (14400 bytes, probably
+0x1c85bf, 320x45), the intro overlay, the part C strip and sheet, and
+the part F overlay. There are no separate font assets; the text is part
+of the RIX pictures.</p>
+<p>The music is an S3M module ("da tonemonob itch", 359368 bytes at EXE
+offset 0x115e03, 4 channels, three tunes mixed into one) played by
+libopenmpt. Credits found in the EXE: blitz code,
+shrine/placidity/croaker graphics, ren meshes, naks/pam/vesuri music,
+asmu player, tran PMODE.</p>
+<p>The figures were rendered from the extracted assets by a throwaway
+script (not kept in the tree); the mesh figure leaves out the landscape
+(A) and part B meshes, because the B projection was degenerate and A too
+thin to read.</p>
+</body>
+</html>
