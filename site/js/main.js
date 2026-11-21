@@ -51,7 +51,14 @@ addEventListener('keydown', e => {
   else if (e.code === 'KeyF') (document.fullscreenElement ? document.exitFullscreen() : stage.requestFullscreen?.());
   else if (e.code === 'KeyC') { cb.checked = !cb.checked; crtSet(); }
 });
-if (STILL) document.getElementById('start').remove(); else document.getElementById('start').addEventListener('click', start);
+// preload every part (assets + table building, ~5 MB) before playback can start, so no part loads while the demo runs
+let ready = !!STILL;
+if (STILL) document.getElementById('start').remove(); else {
+  const st = document.getElementById('start'); let nl = 0; st.textContent = 'Loading 0/' + scenes.length + '...';
+  Promise.all(scenes.map(sc => Promise.resolve(sc.prepare()).catch(e => console.error(e)).then(() => { st.textContent = 'Loading ' + (++nl) + '/' + scenes.length + '...'; })))
+    .then(() => { ready = true; window.demoReady = true; st.textContent = '\u25b6 click to start (sound on)'; });
+  st.addEventListener('click', () => { if (ready) start(); });
+}
 
 const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 function frame() {
